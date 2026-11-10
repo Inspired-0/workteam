@@ -464,7 +464,7 @@ scenarios.push(
     assert.strictEqual(r.status, 2); assert.ok(r.stdout.includes('config.txt'));
   } },
   { name: '26d: a modified submodule is skipped by commit -a, not an error', run() {
-    const sub = initRepo(), repo = initRepo(), git = (cwd, ...a) => execFileSync('git', ['-c', 'protocol.file.allow=always', ...a], { cwd, stdio: 'ignore' });
+    const sub = initRepo(), repo = initRepo(), git = (cwd, ...a) => execFileSync('git', ['-c', 'protocol.file.allow=always', '-c', 'user.name=Workteam fixture', '-c', 'user.email=fixture@example.invalid', ...a], { cwd, stdio: 'ignore' });
     git(repo, 'submodule', 'add', sub, 'sub'); git(repo, 'commit', '-qm', 'sub');
     git(path.join(repo, 'sub'), 'commit', '-q', '--allow-empty', '-m', 'bump');
     const r = runHook('secret-scan.js', { cwd: repo, command: 'git commit -a -m x' });
