@@ -1,0 +1,12 @@
+.workteam/
+.worktrees/
+.claude/*
+!.claude/skills/
+.codex/
+.env
+.env.*
+!.env.example
+*.log
+.DS_Store
+node_modules/
+dist/

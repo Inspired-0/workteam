@@ -1,0 +1,15 @@
+{
+  "name": "workteam-public",
+  "owner": {
+    "name": "Workteam contributors"
+  },
+  "description": "Public Workteam releases for Claude Code and Codex",
+  "plugins": [
+    {
+      "name": "workteam",
+      "source": "./",
+      "description": "Project workflow, agent roles and review gates",
+      "version": "3.7.0"
+    }
+  ]
+}

@@ -1,0 +1,38 @@
+{
+  "name": "workteam",
+  "version": "3.7.0",
+  "description": "Workteam team framework: project contract in AGENTS.md (docs memory map, risk routes, critic gate, blind audit) written by project onboarding, session-start orientation, engineering and process skills, model-prompting reference. Agent roles for Codex live in agents/codex/*.toml and are registered per project by the project-onboarding skill.",
+  "author": {
+    "name": "Workteam contributors"
+  },
+  "license": "MIT",
+  "keywords": [
+    "process",
+    "requirements",
+    "code-review",
+    "audit",
+    "team"
+  ],
+  "skills": "./skills/",
+  "hooks": "./hooks/hooks.json",
+  "interface": {
+    "displayName": "Workteam",
+    "shortDescription": "Project workflow and reviews",
+    "longDescription": "Project contract in AGENTS.md written by onboarding (where things live, answer first, calibrated claims, critic gate before the user sees analysis, blind audit of finished changes), session-start orientation with current state and active plans, engineering skills, a per-model prompting reference and project onboarding. Works in Claude Code and Codex from one source.",
+    "developerName": "Workteam contributors",
+    "category": "Developer Tools",
+    "capabilities": [
+      "Instructions",
+      "Lifecycle hooks"
+    ],
+    "defaultPrompt": [
+      "Onboard this project to the workteam process.",
+      "Write a spec for: ...",
+      "Run a blind audit of the current change."
+    ],
+    "logo": "./assets/icon.png",
+    "composerIcon": "./assets/icon.png"
+  },
+  "homepage": "https://github.com/Inspired-0/workteam",
+  "repository": "https://github.com/Inspired-0/workteam"
+}

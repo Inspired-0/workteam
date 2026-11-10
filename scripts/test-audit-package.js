@@ -1,0 +1,45 @@
+#!/usr/bin/env node
+'use strict';
+const assert = require('assert');
+const fs = require('fs');
+const path = require('path');
+const os = require('os');
+const { execFileSync, spawnSync } = require('child_process');
+const script = path.resolve(__dirname, '../skills/blind-audit/scripts/audit-package');
+const temp = fs.mkdtempSync(path.join(os.tmpdir(), 'workteam-package-'));
+const git = args => execFileSync('git', args, { cwd: temp, encoding: 'utf8' });
+const write = (file, text) => { const target = path.join(temp, file); fs.mkdirSync(path.dirname(target), { recursive: true }); fs.writeFileSync(target, text); };
+try {
+  git(['init', '-q']); git(['config', 'core.hooksPath', '.git/hooks']);
+  git(['config', 'user.name', 'test']); git(['config', 'user.email', 'test@example.invalid']);
+  write('src/report-service.ts', 'old implementation\n');
+  write('docs/CURRENT_STATE.md', 'old process story\n');
+  write('.workteam/tracked.txt', 'old scratch\n');
+  git(['add', '.']); git(['commit', '-qm', 'SECRET PROCESS NARRATIVE']);
+  write('src/report-service.ts', 'new implementation\n');
+  write('docs/CURRENT_STATE.md', 'FORBIDDEN CURRENT STATE\n');
+  write('docs/INDEX.md', 'FORBIDDEN INDEX\n');
+  write('docs/plans/active/x.md', 'FORBIDDEN PLAN\n');
+  write('.workteam/tracked.txt', 'FORBIDDEN TRACKED SCRATCH\n');
+  write('.workteam/untracked.txt', 'FORBIDDEN UNTRACKED SCRATCH\n');
+  write('docs/custom-process.md', 'FORBIDDEN CUSTOM\n');
+  write('outside file.txt', 'new outside product\n');
+  write('src/new\nfile.txt', 'newline product\n');
+  write('test/report.test.js', 'expectation edited\n');
+  write('scripts/test-hooks.js', 'scenario edited\n');
+  const out = path.join(temp, '.workteam/audit/package.md');
+  const invoke = () => execFileSync('bash', [script, 'HEAD', out, '--exclude', 'docs/custom-process.md'], { cwd: path.join(temp, 'src'), encoding: 'utf8' });
+  invoke(); const first = fs.readFileSync(out, 'utf8');
+  assert.ok(first.includes('new implementation') && first.includes('old implementation'));
+  assert.ok(first.includes('new outside product') && first.includes('newline product'));
+  assert.ok(!first.includes('FORBIDDEN') && !first.includes('SECRET PROCESS NARRATIVE'));
+  assert.ok(first.includes('## Excluded process paths') && first.includes('Change SHA256:'));
+  assert.ok(/## Test files changed\n- "scripts\/test-hooks\.js"\n- "test\/report\.test\.js"\n/.test(first), 'changed tests are listed for the auditor, test-*.js scripts too');
+  invoke(); assert.strictEqual(fs.readFileSync(out, 'utf8'), first, 'repeat must not swallow its own package');
+  const failed = spawnSync('bash', [script, 'not-a-commit', out], { cwd: temp, encoding: 'utf8' });
+  assert.notStrictEqual(failed.status, 0); assert.strictEqual(fs.readFileSync(out, 'utf8'), first);
+  write('.gitattributes', '*.ts diff=opaque\n');
+  git(['config', 'diff.opaque.textconv', 'echo HIDDEN_BY_TEXTCONV']);
+  invoke(); assert.ok(fs.readFileSync(out, 'utf8').includes('new implementation'));
+  console.log('audit package: exclusions, product names, subdirectory, unusual paths, test files, repeat, raw diff, invalid base passed');
+} finally { fs.rmSync(temp, { recursive: true, force: true }); }

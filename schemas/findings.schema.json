@@ -1,0 +1,31 @@
+{
+  "title": "workteam review findings",
+  "description": "What critic, auditor and tester return when a dispatch asks for JSON (claude -p --json-schema, codex exec --output-schema). Markdown is rendered from it by scripts/findings.js. Every property is required so the schema works in strict structured-output mode.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["reviewer", "subject", "findings", "verified"],
+  "properties": {
+    "reviewer": { "type": "string", "enum": ["critic", "auditor", "tester"] },
+    "subject": { "type": "string", "description": "Path of the artifact or change package reviewed." },
+    "findings": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["severity", "lens", "contract_item", "where", "what", "why_load_bearing", "what_closes_it", "calibration", "confidence"],
+        "properties": {
+          "severity": { "type": "string", "enum": ["Critical", "Important", "Minor"] },
+          "lens": { "type": "string", "description": "The reviewer's lens, letter or name." },
+          "contract_item": { "type": "string", "description": "The criterion or clause at stake, or 'none: out of contract'." },
+          "where": { "type": "string", "description": "file:line, artifact section, or the evidence gap for an omission." },
+          "what": { "type": "string", "description": "The defect, stated flatly." },
+          "why_load_bearing": { "type": "string", "description": "What breaks or what the user does not get if it stays." },
+          "what_closes_it": { "type": "string", "description": "The concrete action that closes it." },
+          "calibration": { "type": "string", "enum": ["checked", "inferred", "assumed"] },
+          "confidence": { "type": "integer", "minimum": 0, "maximum": 100 }
+        }
+      }
+    },
+    "verified": { "type": "array", "items": { "type": "string" }, "description": "What was checked and found sound." }
+  }
+}

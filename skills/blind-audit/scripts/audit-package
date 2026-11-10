@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+# Shared Node implementation gives both hosts the same raw, path-filtered snapshot.
+set -euo pipefail
+node "$(cd "$(dirname "$0")/../../.." && pwd)/scripts/lib/change-package.js" "$@"

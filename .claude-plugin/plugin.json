@@ -1,0 +1,12 @@
+{
+  "name": "workteam",
+  "description": "Workteam team framework for Claude Code and Codex: project contract in AGENTS.md (map of docs memory, risk routes, review gates) written by project onboarding, session-start orientation, developer/tester/critic/auditor/researcher/debugger agents, process skills, a reviewed library of engineering skills installed per project, model-prompting reference",
+  "version": "3.7.0",
+  "author": {
+    "name": "Workteam contributors"
+  },
+  "license": "MIT",
+  "homepage": "https://github.com/Inspired-0/workteam",
+  "repository": "https://github.com/Inspired-0/workteam",
+  "icon": "./assets/icon.png"
+}

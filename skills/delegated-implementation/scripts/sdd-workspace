@@ -1,0 +1,42 @@
+#!/usr/bin/env bash
+# Resolve and ensure the working-tree directory delegated-implementation uses
+# for one plan's short-lived artifacts: task briefs and implementer reports.
+# Prints the plan directory's absolute path.
+#
+# One directory per plan (.workteam/sdd/<plan-basename>/) so a follow-up plan
+# in the same working tree can never read or overwrite another plan's
+# artifacts. The plan's journal.md — the compaction-recovery ledger — lives in
+# the same directory (see SKILL.md §4).
+#
+# The workspace lives in the working tree (not under .git/) because a harness
+# may treat .git/ as a protected path and deny agent writes there, which would
+# block an implementer subagent from writing its report file. A self-ignoring
+# .gitignore at .workteam/ keeps the whole scratch tree — sdd workspaces,
+# audit packages — out of `git status` and out of accidental commits without
+# modifying any tracked file.
+#
+# Adapted from superpowers (MIT, (c) Jesse Vincent): base path renamed
+# .superpowers/sdd -> .workteam/sdd; the task-brief script is not vendored.
+#
+# Usage: sdd-workspace PLAN_FILE
+set -euo pipefail
+
+if [ $# -ne 1 ]; then
+  echo "usage: sdd-workspace PLAN_FILE" >&2
+  exit 2
+fi
+
+plan=$1
+[ -f "$plan" ] || { echo "no such plan file: $plan" >&2; exit 2; }
+
+slug=$(basename "$plan" .md)
+[ -n "$slug" ] && [ "$slug" != "." ] && [ "$slug" != ".." ] \
+  || { echo "cannot derive a workspace name from: $plan" >&2; exit 2; }
+
+root=$(git rev-parse --show-toplevel)
+scratch="$root/.workteam"
+dir="$scratch/sdd/$slug"
+mkdir -p "$dir"
+# Self-ignoring: everything under .workteam/, including this file itself.
+printf '*\n' > "$scratch/.gitignore"
+cd "$dir" && pwd
